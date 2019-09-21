@@ -1,9 +1,14 @@
-# Create S3 backend for your Terraform AWS project
+# Create Azure Blob Storage backend for your Terraform Azure project
 
 Prerequisites:
 
-- AWS CLI is installed. See [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html).
-- AWS CLI is configured. Run ```aws configure --profile <customer-name>```
+- AZ CLI is installed. See [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest).
+- AZ CLI is configured. Run:
+```
+az login
+az account list --o table
+az account set --subscription <SubscriptionId>
+```
 
 Change ```variables.tf``` with your info.
 
@@ -11,8 +16,10 @@ Run ```terraform init```
 
 Run ```terraform apply```
 
-The name of the bucket you can check with the command ```terraform output s3_bucket```
+The name of the resource group you can check with the command ```terraform output resource_group_name```
 
-Name of the DynamoDB table you can check with the command ```terraform output dynamodb_table_name```
+The name of the storage account name you can check with the command ```terraform output storage_account_name```
 
-Add the file ```example\backend.tf``` to your project and edit if needed. 
+The name of the container name you can check with the command ```terraform output container_name```
+
+Add the file ```example\backend.tf``` to your project and edit as needed. 
