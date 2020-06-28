@@ -4,6 +4,7 @@ resource "azurerm_resource_group" "terraform_rg" {
   tags = {
     Description = "Resource Group for Terraform States"
     Owner       = title("${var.customer}")
+    Environment = var.env
   }
 }
 
@@ -16,6 +17,7 @@ resource "azurerm_storage_account" "terraform_storage_account" {
   tags = {
     Description = "Storage Account for Terraform States"
     Owner       = title("${var.customer}")
+    Environment = var.env
   }
 }
 

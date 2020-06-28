@@ -5,3 +5,7 @@ variable "location" {
 variable "customer" {
   default = "Customer"
 }
+
+variable "env" {
+  default = "Production"
+}
