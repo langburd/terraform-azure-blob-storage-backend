@@ -1,0 +1,100 @@
+---
+name: Pre-Commit
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+
+env:
+  TERRAFORM_DOCS_VERSION: v0.19.0
+  TFLINT_VERSION: v0.53.0
+
+jobs:
+  collectInputs:
+    name: Collect workflow inputs
+    runs-on: ubuntu-latest
+    outputs:
+      directories: ${{ steps.dirs.outputs.directories }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Get root directories
+        id: dirs
+        uses: clowdhaus/terraform-composite-actions/directories@8aef6513928e6e56c30662afb34a21bf4bf5d9f4 # v1.11.1
+
+  preCommitMinVersions:
+    name: Min TF pre-commit
+    needs: collectInputs
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        directory: ${{ fromJson(needs.collectInputs.outputs.directories) }}
+    steps:
+      # https://github.com/orgs/community/discussions/25678#discussioncomment-5242449
+      - name: Delete huge unnecessary tools folder
+        run: |
+          rm -rf /opt/hostedtoolcache/CodeQL
+          rm -rf /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk
+          rm -rf /opt/hostedtoolcache/Ruby
+          rm -rf /opt/hostedtoolcache/go
+
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Terraform min/max versions
+        id: minMax
+        uses: clowdhaus/terraform-min-max@9a19164e967d57d2b8f1e5b0854f39bc73265d8b # v1.3.1
+        with:
+          directory: ${{ matrix.directory }}
+
+      - name: Pre-commit Terraform ${{ steps.minMax.outputs.minVersion }}
+        # Run only validate pre-commit check on min version supported
+        if: ${{ matrix.directory !=  '.' }}
+        uses: clowdhaus/terraform-composite-actions/pre-commit@8aef6513928e6e56c30662afb34a21bf4bf5d9f4 # v1.11.1
+        with:
+          terraform-version: ${{ steps.minMax.outputs.minVersion }}
+          tflint-version: ${{ env.TFLINT_VERSION }}
+          args: 'terraform_validate --color=always --show-diff-on-failure --files ${{ matrix.directory }}/*'
+
+      - name: Pre-commit Terraform ${{ steps.minMax.outputs.minVersion }}
+        # Run only validate pre-commit check on min version supported
+        if: ${{ matrix.directory ==  '.' }}
+        uses: clowdhaus/terraform-composite-actions/pre-commit@8aef6513928e6e56c30662afb34a21bf4bf5d9f4 # v1.11.1
+        with:
+          terraform-version: ${{ steps.minMax.outputs.minVersion }}
+          tflint-version: ${{ env.TFLINT_VERSION }}
+          args: 'terraform_validate --color=always --show-diff-on-failure --files $(ls *.tf)'
+
+  preCommitMaxVersion:
+    name: Max TF pre-commit
+    runs-on: ubuntu-latest
+    needs: collectInputs
+    steps:
+      # https://github.com/orgs/community/discussions/25678#discussioncomment-5242449
+      - name: Delete huge unnecessary tools folder
+        run: |
+          rm -rf /opt/hostedtoolcache/CodeQL
+          rm -rf /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk
+          rm -rf /opt/hostedtoolcache/Ruby
+          rm -rf /opt/hostedtoolcache/go
+
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
+
+      - name: Terraform min/max versions
+        id: minMax
+        uses: clowdhaus/terraform-min-max@9a19164e967d57d2b8f1e5b0854f39bc73265d8b # v1.3.1
+
+      - name: Pre-commit Terraform ${{ steps.minMax.outputs.maxVersion }}
+        uses: clowdhaus/terraform-composite-actions/pre-commit@8aef6513928e6e56c30662afb34a21bf4bf5d9f4 # v1.11.1
+        with:
+          terraform-version: ${{ steps.minMax.outputs.maxVersion }}
+          tflint-version: ${{ env.TFLINT_VERSION }}
+          terraform-docs-version: ${{ env.TERRAFORM_DOCS_VERSION }}
+          install-hcledit: true
