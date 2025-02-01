@@ -81,6 +81,7 @@ No modules.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_backend_snippet"></a> [backend\_snippet](#output\_backend\_snippet) | The backend configuration snippet for Terraform. |
 | <a name="output_resource_group_name"></a> [resource\_group\_name](#output\_resource\_group\_name) | The name of the resource group. |
 | <a name="output_storage_account_name"></a> [storage\_account\_name](#output\_storage\_account\_name) | The name of the storage account. |
 | <a name="output_storage_account_primary_access_key"></a> [storage\_account\_primary\_access\_key](#output\_storage\_account\_primary\_access\_key) | The primary access key of the storage account. |

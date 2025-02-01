@@ -1,3 +1,8 @@
+output "backend_snippet" {
+  description = "The backend configuration snippet for Terraform."
+  value       = module.terraform_azure_blob_storage_backend.backend_snippet
+}
+
 output "resource_group_name" {
   description = "The name of the resource group."
   value       = module.terraform_azure_blob_storage_backend.resource_group_name

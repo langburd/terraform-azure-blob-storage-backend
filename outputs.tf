@@ -1,3 +1,17 @@
+output "backend_snippet" {
+  description = "The backend configuration snippet for Terraform."
+  value       = <<EOF
+terraform {
+  backend "azurerm" {
+    resource_group_name   = "${azurerm_resource_group.this.name}"
+    storage_account_name  = "${azurerm_storage_account.this.name}"
+    container_name        = "${azurerm_storage_container.this.name}"
+    key                   = "${lower(var.env)}/${lower(var.project)}/terraform.tfstate"
+  }
+}
+EOF
+}
+
 output "resource_group_name" {
   description = "The name of the resource group."
   value       = azurerm_resource_group.this.name

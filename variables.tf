@@ -1,9 +1,3 @@
-variable "name" {
-  default     = "Company"
-  description = "The name to be used as a main part of the resource names."
-  type        = string
-}
-
 variable "env" {
   default     = "Dev"
   description = "The environment for which the infrastructure is being created."
@@ -12,6 +6,12 @@ variable "env" {
 
 variable "location" {
   description = "The Azure Region in which all resources will be created."
+  type        = string
+}
+
+variable "name" {
+  default     = "Company"
+  description = "The name to be used as a main part of the resource names."
   type        = string
 }
 
